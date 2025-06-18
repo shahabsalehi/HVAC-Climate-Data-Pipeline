@@ -1,0 +1,88 @@
+{
+  "pipeline": "hvac_climate_data",
+  "generated_at": "2025-11-28T10:43:09.141197+00:00",
+  "site": {
+    "name": "Building A - Main Campus",
+    "location": "Tallinn, Estonia",
+    "building_type": "Commercial Office",
+    "floor_area_m2": 3450
+  },
+  "current_conditions": {
+    "indoor_temp_c": 21.5,
+    "outdoor_temp_c": 8.2,
+    "indoor_humidity_percent": 42,
+    "outdoor_humidity_percent": 78,
+    "co2_ppm": 580,
+    "aqi_index": 32,
+    "hvac_status": "Heating Mode"
+  },
+  "trends_24h": {
+    "avg_indoor_temp_c": 21.3,
+    "max_indoor_temp_c": 22.1,
+    "min_indoor_temp_c": 20.8,
+    "avg_co2_ppm": 612,
+    "max_co2_ppm": 845,
+    "peak_occupancy_percent": 87
+  },
+  "hourly_data": [
+    {
+      "hour": 0,
+      "indoor_temp_c": 20.8,
+      "outdoor_temp_c": 6.5,
+      "co2_ppm": 420
+    },
+    {
+      "hour": 3,
+      "indoor_temp_c": 20.9,
+      "outdoor_temp_c": 5.8,
+      "co2_ppm": 415
+    },
+    {
+      "hour": 6,
+      "indoor_temp_c": 21.0,
+      "outdoor_temp_c": 6.2,
+      "co2_ppm": 450
+    },
+    {
+      "hour": 9,
+      "indoor_temp_c": 21.4,
+      "outdoor_temp_c": 7.5,
+      "co2_ppm": 680
+    },
+    {
+      "hour": 12,
+      "indoor_temp_c": 21.8,
+      "outdoor_temp_c": 9.1,
+      "co2_ppm": 845
+    },
+    {
+      "hour": 15,
+      "indoor_temp_c": 21.6,
+      "outdoor_temp_c": 8.8,
+      "co2_ppm": 790
+    },
+    {
+      "hour": 18,
+      "indoor_temp_c": 21.3,
+      "outdoor_temp_c": 7.6,
+      "co2_ppm": 520
+    },
+    {
+      "hour": 21,
+      "indoor_temp_c": 21.1,
+      "outdoor_temp_c": 7.0,
+      "co2_ppm": 460
+    }
+  ],
+  "alerts_summary": {
+    "active_alerts": 1,
+    "resolved_today": 2,
+    "recent_alert": {
+      "type": "High CO2",
+      "timestamp": "2025-11-28T14:30:09.141197+00:00",
+      "value": 845,
+      "threshold": 800,
+      "status": "resolved"
+    }
+  }
+}

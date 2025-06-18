@@ -1,0 +1,132 @@
+```mermaid
+flowchart TB
+    subgraph "Data Sources"
+        A[Indoor Sensors<br/>JSONL Files]
+        B[Outdoor Weather<br/>JSONL Files]
+    end
+
+    subgraph "Data Ingestion"
+        C[Data Generator Scripts<br/>generate_indoor_data.py<br/>generate_outdoor_data.py]
+        D[Ingestion Module<br/>ingest_transform.py]
+    end
+
+    subgraph "Bronze Layer - Raw Data"
+        E[Bronze Indoor Events<br/>Parquet - Partitioned]
+        F[Bronze Outdoor Weather<br/>Parquet - Partitioned]
+    end
+
+    subgraph "Silver Layer - Cleaned & Enriched"
+        G[Silver Comfort Facts<br/>- Joined indoor/outdoor<br/>- Resampled to 5-min<br/>- Computed flags]
+    end
+
+    subgraph "Gold Layer - Analytics Ready"
+        H[Gold Daily Metrics<br/>- Aggregated by room/day<br/>- KPIs & percentages<br/>- Partitioned by date]
+    end
+
+    subgraph "Orchestration"
+        I[Apache Airflow DAG<br/>hvac_climate_dag.py]
+        J[Task: Generate Data]
+        K[Task: Run Pipeline]
+        L[Task: Quality Checks]
+    end
+
+    subgraph "Analytics & Consumption"
+        M[FastAPI REST API<br/>- /comfort/summary<br/>- /comfort/overcooling<br/>- /comfort/stale-air]
+        N[Jupyter Notebook<br/>exploration.ipynb<br/>- Visualizations<br/>- Dashboards]
+        O[External Clients<br/>BI Tools, Apps]
+    end
+
+    subgraph "Data Quality"
+        P[Quality Validation<br/>- Completeness checks<br/>- Range validation<br/>- Volume checks]
+    end
+
+    %% Data flow
+    C -->|Generate| A
+    C -->|Generate| B
+    A -->|Load JSONL| D
+    B -->|Load JSONL| D
+    D -->|Transform| E
+    D -->|Transform| F
+    E -->|Clean & Parse| G
+    F -->|Clean & Parse| G
+    G -->|Aggregate| H
+
+    %% Orchestration flow
+    I -.->|Schedule| J
+    J -->|Trigger| C
+    I -.->|Schedule| K
+    K -->|Execute| D
+    K -->|Monitor| P
+    I -.->|Schedule| L
+    L -->|Validate| H
+
+    %% Consumption flow
+    H -->|Read Parquet| M
+    H -->|Read Parquet| N
+    M -->|JSON API| O
+    N -->|Visualize| O
+
+    %% Styling
+    classDef source fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef bronze fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef silver fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef gold fill:#fff9c4,stroke:#f57f17,stroke-width:3px
+    classDef orchestration fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef consumption fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class A,B,C source
+    class E,F bronze
+    class G silver
+    class H gold
+    class I,J,K,L orchestration
+    class M,N,O consumption
+```
+
+## Data Flow Description
+
+### Bronze Layer (Raw → Bronze)
+- **Input**: Raw JSONL files from sensors and weather APIs
+- **Processing**: 
+  - Parse timestamps to proper datetime types
+  - Cast numeric fields to appropriate types
+  - Add ingestion metadata
+- **Output**: Parquet files with basic type cleaning
+
+### Silver Layer (Bronze → Silver)
+- **Input**: Bronze Parquet files
+- **Processing**:
+  - Pivot indoor sensor data (one row per timestamp+room)
+  - Resample outdoor data to 5-minute intervals
+  - Join indoor and outdoor data with temporal alignment
+  - Compute comfort flags:
+    - **overcooled_flag**: `indoor_temp < 21°C AND outdoor_temp > 25°C`
+    - **stale_air_flag**: `indoor_co2 > 1000 ppm`
+- **Output**: Unified comfort facts table
+
+### Gold Layer (Silver → Gold)
+- **Input**: Silver comfort facts
+- **Processing**:
+  - Aggregate by date, building, and room
+  - Calculate daily metrics:
+    - Reading counts
+    - Overcooling/stale air incident counts
+    - Percentage time in each condition
+    - Average temperature, humidity, CO₂
+- **Output**: Analytics-ready daily metrics
+
+## Partitioning Strategy
+
+All layers use date-based partitioning:
+```
+data/{layer}/{table}/year=YYYY/month=MM/day=DD/part-*.parquet
+```
+
+Example:
+```
+data/gold/daily_comfort_metrics/year=2025/month=01/day=15/part-*.parquet
+```
+
+This enables:
+- Efficient date-range queries
+- Easy data lifecycle management
+- Scalability to cloud storage (S3, ADLS)
