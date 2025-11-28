@@ -1,0 +1,13 @@
+# Expected room IDs for data completeness checks
+# One room ID per line
+# Used by the Airflow DAG quality checks
+
+R101
+R102
+R103
+R201
+R202
+R203
+R301
+R302
+R303

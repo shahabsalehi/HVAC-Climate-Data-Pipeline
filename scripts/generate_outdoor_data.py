@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import random
 
-def main(start_date, days, out_dir, lat=59.3293, lon=18.0686):
+def main(start_date, days, out_dir, lat=59.4370, lon=24.7536):
     """
     Simple synthetic outdoor weather generator.
     In a real deployment, replace with an Open-Meteo or NOAA API call.
+    Default coordinates: Tallinn, Estonia (59.4370°N, 24.7536°E)
     """
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -20,7 +21,7 @@ def main(start_date, days, out_dir, lat=59.3293, lon=18.0686):
     rows = []
     while current < end:
         hour = current.hour
-        # synthetic "Stockholm-like" spring
+        # Synthetic Baltic spring weather (Tallinn-like conditions)
         base_temp = 12 + 5 * (1 if 11 <= hour <= 16 else -1)
         temp_c = round(base_temp + random.uniform(-3, 3), 2)
         rel_humidity = round(55 + random.uniform(-15, 15), 1)
