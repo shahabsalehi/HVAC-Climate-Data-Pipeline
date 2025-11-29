@@ -29,6 +29,9 @@ httpx>=0.24.0  # For FastAPI testing
 python-dotenv>=1.0.0
 requests>=2.31.0
 
+# Hugging Face Hub (for dataset publishing)
+huggingface_hub>=0.19.0
+
 # Development Tools (Optional)
 # black>=23.0.0
 # flake8>=6.1.0
